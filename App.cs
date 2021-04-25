@@ -1,49 +1,61 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Collections.Generic; 
 namespace MultiValueDictionaryApp
 {
     class App
     {
         //Created by: Douglas Bresee
+
+        Commands commands;
+        public App()
+        {
+           commands = new Commands(); 
+        }
        public void RunApp()
         {
-            string userEnteredCommand = String.Empty; 
-            string[] userEnteredValues = null;
-
-            Commands commands = new Commands();
-
-            Console.WriteLine("Multi Value Dictionary App");
-            Console.WriteLine("Copyright 2021");
-            Console.WriteLine(" ");
-
-
-            //Main Loop
-            do
+            try
             {
-                Console.Write("> ");
-                userEnteredValues = Console.ReadLine().Split(' ');
+                string userEnteredCommand = String.Empty;
+                string[] userEnteredValues = null;
 
+                Console.WriteLine("Multi Value Dictionary App");
+                Console.WriteLine("Copyright 2021");
+                Console.WriteLine("Created by Douglas Bresee");
+                Console.WriteLine("");
 
-                userEnteredValues[0]  = userEnteredValues[0].ToUpper().Trim();
-
-                if (userEnteredValues[0] == "EXIT")
+                //Main Loop
+                do
                 {
-                    Console.WriteLine("Are you sure you want to Exit? Enter 'Yes' to Exit");
-                    userEnteredCommand = Console.ReadLine().ToUpper().Trim();
+                    Console.Write("> ");
+                    userEnteredValues = Console.ReadLine().Split(' ');
+                    userEnteredValues[0] = userEnteredValues[0].ToUpper().Trim();
 
-                    if (userEnteredCommand == "YES")
-                    { 
-                        Environment.Exit(0);
+                    if (userEnteredValues[0] == "EXIT")
+                    {
+                        Console.WriteLine("Are you sure you want to Exit? Enter 'Yes' to Exit, 'No' to continue.");
+                        userEnteredCommand = Console.ReadLine().ToUpper().Trim();
+
+                        if (userEnteredCommand == "YES")
+                        {
+                            Environment.Exit(0);
+                        }
+                        if (userEnteredCommand == "NO")
+                        {
+                            //prompt for next command
+                            continue;
+                        }
                     }
-                }
 
-                DisplayOutput(commands.CommandProcessor(userEnteredValues)); 
+                    DisplayOutput(commands.CommandProcessor(userEnteredValues));
 
-            } while (true); 
+                } while (true);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Exception in runApp()");
+                Console.WriteLine(ex.Message);
+                Console.ReadLine();
+            }
 
         }
 
@@ -52,18 +64,17 @@ namespace MultiValueDictionaryApp
             int count = 0;
 
             foreach(string lineToDisplay in outputList)
-            {
-                if (outputList.Count > 1)
+            { 
+                if(lineToDisplay.Contains( ")" ))
                 {
-                    count++;
-                    Console.WriteLine(count + ") " + lineToDisplay);
+                    Console.WriteLine(lineToDisplay); 
                 }
                 else
-                {
-                    Console.WriteLine( ") " + lineToDisplay);
+                { 
+                    count++;
+                    Console.WriteLine(count + ") " + lineToDisplay);
                 } 
-            }
-
+            } 
         }
     }
 

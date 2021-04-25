@@ -1,118 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq; 
 
 namespace MultiValueDictionaryApp
 {
+
     class Commands
     {
         //Created by: Douglas Bresee
 
-        Dictionary<string, List<string>> commandsDictionary = null;
+        private Dictionary<string, List<string>> commandsDictionary { get; set;} 
+
+        //hard coded values all in one place
+        string trueString = ") true";
+        string falseString = ") false";
+        string emptySetString = "(empty set)";
+        string removedString = ") Removed";
+        string valueDoesNotExistString = ") ERROR, value does not exist.";
+        string keyDoesNotExistString = ") ERROR, key does not exist.";
+        string keyRequiredString = ") ERROR, Key is required for ADD.";
+        string valueExistsString = ") ERROR, value already exists.";
+        string addedString = ") Added";
+        string clearedString = ") Cleared";
+        string commandNotValidString = ") Command is not valid.";
+
+
         public Commands()
         {
-            commandsDictionary = new Dictionary<string, List<string>>();
-
+            commandsDictionary = new Dictionary<string, List<string>>(); 
         }
 
         public List<string> CommandProcessor(string[] userEnteredValues)
         {
-            List<string> commandResult = new List<string>();
             string userEnteredCommand = string.Empty;
+            List<string> commandResult = new List<string>(); 
             string userEnteredKey = string.Empty;
             string userEnteredValue = string.Empty;
 
-            if (userEnteredValues.Length > 0)
-            {
-                userEnteredCommand = userEnteredValues[0];
+            try
+            {  
+                if (userEnteredValues.Length > 0)
+                {
+                    userEnteredCommand = userEnteredValues[0];
+                }
+
+                if (userEnteredValues.Length > 1)
+                {
+                    userEnteredKey = userEnteredValues[1];
+                }
+
+                if (userEnteredValues.Length > 2)
+                {
+                    userEnteredValue = userEnteredValues[2];
+                }
+
+                switch (userEnteredCommand)
+                {
+                    case "ADD":
+                        commandResult = AddCommand(userEnteredKey, userEnteredValue);
+                        break;
+
+                    case "KEYS":
+                        commandResult = KeysCommand();
+                        break;
+
+                    case "MEMBERS":
+                        commandResult = MembersCommand(userEnteredKey);
+                        break;
+
+                    case "REMOVE":
+                        commandResult = RemoveCommand(userEnteredKey, userEnteredValue);
+                        break;
+
+                    case "REMOVEALL":
+                        commandResult = RemoveAllCommand(userEnteredKey);
+                        break;
+
+                    case "CLEAR":
+                        commandResult = ClearCommand();
+                        break;
+
+                    case "KEYEXISTS":
+                        commandResult = KeyExistsCommand(userEnteredKey);
+                        break;
+
+                    case "VALUEEXISTS":
+                        commandResult = ValueExistsCommand(userEnteredKey, userEnteredValue);
+                        break;
+
+                    case "ALLMEMBERS":
+                        commandResult = AllMembersCommand(); 
+                        break;
+
+                    case "ITEMS":
+                        commandResult = ItemsCommand();
+                        break;
+
+                    default:
+                        commandResult.Add(commandNotValidString);
+                        break;
+                }
             }
-
-            if (userEnteredValues.Length > 1)
-            {
-                userEnteredKey = userEnteredValues[1];
-            }
-
-            if (userEnteredValues.Length > 2)
-            {
-                userEnteredValue = userEnteredValues[2];
-            }
-
-
-
-            switch (userEnteredCommand)
-            {
-                case "ADD":
-                    commandResult = AddCommand(userEnteredKey, userEnteredValue);
-                    break;
-
-                case "KEYS":
-                    commandResult = KeysCommand();
-                    break;
-
-                case "MEMBERS":
-                    commandResult = MembersCommand(userEnteredKey);
-                    break;
-
-                case "REMOVE":
-                    commandResult = RemoveCommand(userEnteredKey, userEnteredValue);
-                    break;
-
-                case "REMOVEALL":
-                    commandResult = RemoveAllCommand(userEnteredKey);
-                    break;
-
-                case "CLEAR":
-                    commandResult = ClearCommand();
-                    break;
-
-                case "KEYEXISTS":
-                    commandResult = KeyExistsCommand(userEnteredKey);
-                    break;
-
-                case "VALUEEXISTS":
-                    commandResult = ValueExistsCommand(userEnteredKey, userEnteredValue);
-                    break;
-
-                case "ALLMEMBERS":
-                    commandResult = AllMembersCommand();
-                    break;
-
-                case "ITEMS":
-                    commandResult = ItemsCommand();
-                    break;
-
-                default:
-                    commandResult.Add("Command is not valid.");
-                    break;
-            }
+            catch(Exception ex)
+            {  
+                Console.WriteLine("Exception in CommandProcessor()");
+                Console.WriteLine("Command: " + userEnteredCommand);
+                Console.WriteLine(ex.Message); 
+                Console.ReadLine();
+            } 
 
             return commandResult;
+
         }
 
 
         public List<string> AddCommand(string userEnteredKey, string userEnteredValue)
         {
-            List<string> result = new List<string>();
+            List<string> returnList = new List<string>();
 
             if (String.IsNullOrEmpty(userEnteredKey))
             {
-                result.Add("ERROR, Key is required for ADD.");
+                returnList.Add(keyRequiredString);
             }
-            else if (commandsDictionary.ContainsKey(userEnteredKey) &&
-                     commandsDictionary[userEnteredKey].Contains(userEnteredValue))
+            else if ((KeyExists(userEnteredKey)[0] == trueString) &&
+                     (ValueExistsCommand(userEnteredKey, userEnteredValue)[0] == trueString))
             {
                 //The Dictionary contains the key and the value List already contains the value 
 
-                result.Add("ERROR, value already exists.");
+                returnList.Add(valueExistsString);
             }
-            else if (commandsDictionary.ContainsKey(userEnteredKey))
+            else if (KeyExists(userEnteredKey)[0] == trueString)
             {
                 //The Dictionary contains the key, but the value List does not contain the value
 
                 commandsDictionary[userEnteredKey].Add(userEnteredValue);
-                result.Add("Added");
+                returnList.Add(addedString);
             }
             else
             {
@@ -121,13 +143,12 @@ namespace MultiValueDictionaryApp
                 List<string> valuesList = new List<string>();
 
                 valuesList.Add(userEnteredValue);
-
                 commandsDictionary.Add(userEnteredKey, valuesList);
-                result.Add("Added");
+                returnList.Add(addedString);
 
             }
 
-            return result;
+            return returnList;
 
         }
 
@@ -142,7 +163,7 @@ namespace MultiValueDictionaryApp
             }
             else
             {
-                returnList.Add("empty set");
+                returnList.Add(emptySetString);
             }
 
             return returnList;
@@ -159,7 +180,7 @@ namespace MultiValueDictionaryApp
             }
             else
             {
-                returnList.Add("ERROR, key does not exist.");
+                returnList.Add(keyDoesNotExistString);
             }
 
             return returnList;
@@ -169,26 +190,26 @@ namespace MultiValueDictionaryApp
         { 
            List<string> returnList = new List<string>();
 
-           if (KeyExists(userEnteredKey)[0] == "true")
+           if (KeyExists(userEnteredKey)[0] == trueString)
             {
-                if (commandsDictionary[userEnteredKey].Contains(userEnteredValue))
+                if (ValueExistsCommand(userEnteredKey, userEnteredValue)[0] == trueString)
                 {
                     commandsDictionary[userEnteredKey].Remove(userEnteredValue);
                     if (commandsDictionary[userEnteredKey].Count == 0)
                     {
                         commandsDictionary.Remove(userEnteredKey);
                     }
-                    returnList.Add("Removed");
+                    returnList.Add(removedString);
                 }
                 else
                 {
-                    returnList.Add("ERROR, value does not exist");
+                    returnList.Add(valueDoesNotExistString);
                 }
 
             }
             else
             {
-                returnList.Add("ERROR, key does not exist.");
+                returnList.Add(keyDoesNotExistString);
             }
 
             return returnList;
@@ -198,14 +219,14 @@ namespace MultiValueDictionaryApp
         {
             List<string> returnList = new List<string>();
 
-            if (KeyExists(userEnteredKey)[0] == "true")
+            if (KeyExists(userEnteredKey)[0] == trueString)
             {
                 commandsDictionary.Remove(userEnteredKey);
-                returnList.Add("Removed");
+                returnList.Add(removedString);
             }
             else
             {
-                returnList.Add("ERROR, key does not exist.");
+                returnList.Add(keyDoesNotExistString);
             }
 
             return returnList;
@@ -216,7 +237,8 @@ namespace MultiValueDictionaryApp
             List<string> returnList = new List<string>();
 
             commandsDictionary.Clear();
-            returnList.Add("Cleared");
+            returnList.Add(clearedString);
+
             return returnList;
         }
 
@@ -225,9 +247,9 @@ namespace MultiValueDictionaryApp
         { 
             List<string> returnList = new List<string>();
 
-            if (KeysCommand()[0] == "empty set")
+            if (KeysCommand()[0] == emptySetString)
             {
-                returnList.Add("empty set");
+                returnList.Add(emptySetString);
             }
             else
             {
@@ -247,13 +269,13 @@ namespace MultiValueDictionaryApp
         {
             List<string> returnList = new List<string>();
 
-            if (KeysCommand()[0] == "empty set")
+            if (KeysCommand()[0] == emptySetString)
             {
-                returnList.Add("empty set");
+                returnList.Add(emptySetString);
             }
             else
             {
-                foreach (var key  in commandsDictionary.Keys.ToList())
+                foreach (var key in commandsDictionary.Keys.ToList())
                 { 
                     foreach (var value in commandsDictionary[key])
                     {
@@ -266,31 +288,6 @@ namespace MultiValueDictionaryApp
         }
 
 
-
-        public List<string> OutputMembersOrItems(string outputType)
-        {
-            List<string> returnList = new List<string>();
-
-            if (KeysCommand()[0] == "empty set")
-            {
-                returnList.Add("empty set");
-            }
-            else
-            {
-                foreach (var valuesList in commandsDictionary.Values.ToList())
-                {
-                    foreach (var value in valuesList)
-                    {
-                        returnList.Add(value);
-                    }
-                }
-            }
-
-            return returnList;
-        }
-
-
-
         public List<string> KeyExistsCommand(string userEnteredKey)
         {
             List<string> returnList = new List<string>();
@@ -299,18 +296,17 @@ namespace MultiValueDictionaryApp
             return returnList;
         }
 
-
         public List<string> ValueExistsCommand(string userEnteredKey, string userEnteredValue)
         {
             List<string> returnList = new List<string>(); 
 
-            if (KeyExists(userEnteredKey)[0] == "true")
+            if (KeyExists(userEnteredKey)[0] == trueString)
             {
-                returnList.Add(commandsDictionary[userEnteredKey].Contains(userEnteredValue)  ? "true"  : "false") ;
+                returnList.Add(commandsDictionary[userEnteredKey].Contains(userEnteredValue)  ? trueString : falseString) ;
             }
             else
             {
-                returnList.Add("false"); 
+                returnList.Add(falseString); 
             } 
 
             return returnList;
@@ -321,7 +317,7 @@ namespace MultiValueDictionaryApp
         {
             List<string> returnList = new List<string>();
 
-            returnList.Add(commandsDictionary.ContainsKey(userEnteredKey)  ? "true" : "false"); 
+            returnList.Add(commandsDictionary.ContainsKey(userEnteredKey)  ?  trueString  :  falseString); 
 
             return returnList;
         }
