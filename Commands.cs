@@ -5,24 +5,24 @@ using System.Linq;
 namespace MultiValueDictionaryApp
 {
 
-    class Commands
+    public class Commands
     {
         //Created by: Douglas Bresee
 
-        private Dictionary<string, List<string>> commandsDictionary { get; set;} 
+        private Dictionary<string, List<string>> commandsDictionary { get; set;}
 
         //hard coded values all in one place
-        string trueString = ") true";
-        string falseString = ") false";
-        string emptySetString = "(empty set)";
-        string removedString = ") Removed";
-        string valueDoesNotExistString = ") ERROR, value does not exist.";
-        string keyDoesNotExistString = ") ERROR, key does not exist.";
-        string keyRequiredString = ") ERROR, Key is required for ADD.";
-        string valueExistsString = ") ERROR, value already exists.";
-        string addedString = ") Added";
-        string clearedString = ") Cleared";
-        string commandNotValidString = ") Command is not valid.";
+        public string trueString = ") true";
+        public string falseString = ") false";
+        public string emptySetString = "(empty set)";
+        public string removedString = ") Removed";
+        public string valueDoesNotExistString = ") ERROR, value does not exist.";
+        public string keyDoesNotExistString = ") ERROR, key does not exist.";
+        public string keyRequiredString = ") ERROR, Key is required for ADD.";
+        public string valueExistsString = ") ERROR, value already exists.";
+        public string addedString = ") Added";
+        public string clearedString = ") Cleared";
+        public string commandNotValidString = ") Command is not valid.";
 
 
         public Commands()
