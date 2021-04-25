@@ -61,9 +61,7 @@ namespace MultiValueDictionaryApp
                 else
                 {
                     Console.WriteLine( ") " + lineToDisplay);
-                }
-               
-
+                } 
             }
 
         }
